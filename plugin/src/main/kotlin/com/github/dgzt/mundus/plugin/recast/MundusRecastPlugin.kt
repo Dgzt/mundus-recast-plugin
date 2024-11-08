@@ -14,10 +14,10 @@ class MundusRecastPlugin : Plugin() {
             const val PAD = 5f
         }
 
-        override fun getMenuName(): String = "Your plugin"
+        override fun getMenuName(): String = "Recast plugin"
 
         override fun setupDialogRootWidget(root: RootWidget) {
-            root.addLabel("Your plugin").setPad(PAD, PAD, PAD, PAD)
+            root.addLabel("TODO").setPad(PAD, PAD, PAD, PAD)
         }
 
     }
