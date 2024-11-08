@@ -1,11 +1,11 @@
-package com.github.your_name.your_plugin
+package com.github.dgzt.mundus.plugin.recast
 
 import com.mbrlabs.mundus.pluginapi.MenuExtension
 import com.mbrlabs.mundus.pluginapi.ui.RootWidget
 import org.pf4j.Extension
 import org.pf4j.Plugin
 
-class YourPlugin : Plugin() {
+class MundusRecastPlugin : Plugin() {
 
     @Extension
     class YourMenuExtension : MenuExtension {

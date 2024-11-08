@@ -29,9 +29,9 @@ dependencies {
     kapt("org.pf4j:pf4j:3.11.0")
 
     // TODO: Change to JamesTKhan's link after this branch merged
-    implementation("com.github.Dgzt.Mundus:commons:editor-plugin-system-SNAPSHOT")
-    implementation("com.github.Dgzt.Mundus:plugin-api:editor-plugin-system-SNAPSHOT")
-    implementation("com.github.Dgzt.Mundus:editor-commons:editor-plugin-system-SNAPSHOT")
+    implementation("com.github.Dgzt.Mundus:commons:plugin-new-component-SNAPSHOT")
+    implementation("com.github.Dgzt.Mundus:plugin-api:plugin-new-component-SNAPSHOT")
+    implementation("com.github.Dgzt.Mundus:editor-commons:plugin-new-component-SNAPSHOT")
 }
 
 // Apply a specific Java toolchain to ease working on different environments.
@@ -42,13 +42,13 @@ java {
 }
 
 tasks.withType<Jar> {
-    archiveFileName.set("your-plugin.jar")
+    archiveFileName.set("racast-plugin.jar")
 
     // Otherwise you'll get a "No main manifest attribute" error
     manifest {
-        attributes["Plugin-Class"]= "com.github.your_name.your_plugin.YourPlugin"
-        attributes["Plugin-Id"] = "your-plugin"
-        attributes["Plugin-Provider"] = "Your Name"
+        attributes["Plugin-Class"]= "com.github.dgzt.mundus.plugin.recast.MundusRecastPlugin"
+        attributes["Plugin-Id"] = "recast-plugin"
+        attributes["Plugin-Provider"] = "Tibor Zsuro (Dgzt)"
         attributes["Plugin-Version"] = "0.0.1"
     }
 }
