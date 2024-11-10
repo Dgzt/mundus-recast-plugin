@@ -29,9 +29,9 @@ dependencies {
     kapt("org.pf4j:pf4j:3.11.0")
 
     // TODO: Change to JamesTKhan's link after this branch merged
-    implementation("com.github.Dgzt.Mundus:commons:plugin-new-component-SNAPSHOT")
-    implementation("com.github.Dgzt.Mundus:plugin-api:plugin-new-component-SNAPSHOT")
-    implementation("com.github.Dgzt.Mundus:editor-commons:plugin-new-component-SNAPSHOT")
+    implementation("com.github.Dgzt.Mundus:commons:plugin-custom-asset-SNAPSHOT")
+    implementation("com.github.Dgzt.Mundus:plugin-api:plugin-custom-asset-SNAPSHOT")
+    implementation("com.github.Dgzt.Mundus:editor-commons:plugin-custom-asset-SNAPSHOT")
 }
 
 // Apply a specific Java toolchain to ease working on different environments.
