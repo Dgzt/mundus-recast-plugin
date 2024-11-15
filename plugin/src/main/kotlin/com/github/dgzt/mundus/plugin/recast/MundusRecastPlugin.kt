@@ -6,8 +6,10 @@ import com.github.dgzt.mundus.plugin.recast.creator.ComponentWidgetCreator
 import com.mbrlabs.mundus.commons.mapper.CustomComponentConverter
 import com.mbrlabs.mundus.commons.scene3d.GameObject
 import com.mbrlabs.mundus.commons.scene3d.components.Component
+import com.mbrlabs.mundus.pluginapi.AssetExtension
 import com.mbrlabs.mundus.pluginapi.ComponentExtension
 import com.mbrlabs.mundus.pluginapi.MenuExtension
+import com.mbrlabs.mundus.pluginapi.manager.AssetManager
 import com.mbrlabs.mundus.pluginapi.ui.RootWidget
 import org.pf4j.Extension
 import org.pf4j.Plugin
@@ -41,6 +43,14 @@ class MundusRecastPlugin : Plugin() {
             ComponentWidgetCreator.setup(component as RecastNavMeshComponent, rootWidget)
 
         override fun getConverter(): CustomComponentConverter = RecastNavMeshConverter()
+    }
+
+    @Extension
+    class RecastAssetExtension : AssetExtension {
+        override fun assetManager(assetManager: AssetManager) {
+            PropertyManager.assetManager = assetManager
+        }
+
     }
 
 }
