@@ -28,6 +28,8 @@ dependencies {
     api("com.badlogicgames.gdx:gdx:1.12.0")
     kapt("org.pf4j:pf4j:3.11.0")
 
+    api(project(":runtime"))
+
     // TODO: Change to JamesTKhan's link after this branch merged
     implementation("com.github.Dgzt.Mundus:commons:plugin-custom-asset-SNAPSHOT")
     implementation("com.github.Dgzt.Mundus:plugin-api:plugin-custom-asset-SNAPSHOT")
@@ -42,6 +44,8 @@ java {
 }
 
 tasks.withType<Jar> {
+    dependsOn(":runtime:jar")
+
     archiveFileName.set("racast-plugin.jar")
 
     // Otherwise you'll get a "No main manifest attribute" error
@@ -51,6 +55,17 @@ tasks.withType<Jar> {
         attributes["Plugin-Provider"] = "Tibor Zsuro (Dgzt)"
         attributes["Plugin-Version"] = "0.0.1"
     }
+
+    // Include runtime in jar file
+    val dependencies = configurations
+        .runtimeClasspath
+        .get()
+        .filter {
+            it.name.equals("runtime.jar")
+        }
+        .map(::zipTree)
+    from(dependencies)
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }
 
 tasks.named<Test>("test") {
