@@ -17,7 +17,8 @@ object ComponentWidgetCreator {
             val file = FileHandle("$tmpDir/tmp.navmesh")
             file.writeString("Hi!", true)
 
-            PropertyManager.assetManager.createNewAsset(file)
+            var asset = PropertyManager.assetManager.createNewAsset(file)
+            component.asset = asset
 
             file.delete()
         }.setAlign(WidgetAlign.CENTER)
