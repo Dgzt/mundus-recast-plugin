@@ -1,6 +1,7 @@
 package com.github.dgzt.mundus.plugin.recast
 
 import com.github.dgzt.mundus.plugin.recast.component.RecastNavMeshComponent
+import com.github.dgzt.mundus.plugin.recast.converter.RecastNavMesComponentConverter
 import com.github.dgzt.mundus.plugin.recast.creator.ComponentCreator
 import com.github.dgzt.mundus.plugin.recast.creator.ComponentWidgetCreator
 import com.mbrlabs.mundus.commons.mapper.CustomComponentConverter
@@ -42,7 +43,7 @@ class MundusRecastPlugin : Plugin() {
         override fun setupComponentInspectorWidget(component: Component, rootWidget: RootWidget) =
             ComponentWidgetCreator.setup(component as RecastNavMeshComponent, rootWidget)
 
-        override fun getConverter(): CustomComponentConverter = RecastNavMeshConverter()
+        override fun getConverter(): CustomComponentConverter = RecastNavMesComponentConverter()
     }
 
     @Extension

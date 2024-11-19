@@ -11,6 +11,7 @@ public class RecastNavMeshComponent extends AbstractComponent {
 
     public RecastNavMeshComponent(final GameObject go) {
         super(go);
+        type = Type.NAVMESH;
     }
 
     @Override
