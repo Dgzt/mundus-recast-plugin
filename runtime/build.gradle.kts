@@ -25,6 +25,7 @@ repositories {
 dependencies {
     api("com.badlogicgames.gdx:gdx:1.12.0")
     api("com.github.Dgzt.Mundus:commons:plugin-custom-asset-SNAPSHOT")
+    api("com.github.JamesTKhan:gdx-recast:ce15d46")
 }
 
 // Apply a specific Java toolchain to ease working on different environments.

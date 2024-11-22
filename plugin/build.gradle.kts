@@ -61,7 +61,10 @@ tasks.withType<Jar> {
         .runtimeClasspath
         .get()
         .filter {
-            it.name.equals("runtime.jar")
+            it.name.equals("runtime.jar") ||
+            it.name.equals("gdx-recast-ce15d46.jar") ||
+            it.name.equals("recast-gwt_migration_antz-SNAPSHOT.jar") ||
+            it.name.equals("detour-gwt_migration_antz-SNAPSHOT.jar")
         }
         .map(::zipTree)
     from(dependencies)
