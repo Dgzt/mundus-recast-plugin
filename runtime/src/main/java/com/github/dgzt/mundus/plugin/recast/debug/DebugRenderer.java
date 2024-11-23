@@ -30,7 +30,7 @@ public class DebugRenderer {
         final RecastNavMeshComponent component = gameObject.findComponentByType(Component.Type.NAVMESH);
 
         if (component != null) {
-            recastDebugDraw.debugDrawNavMeshPolysWithFlags(null, 1); // TODO pass navmesh
+            recastDebugDraw.debugDrawNavMeshPolysWithFlags(component.getNavMeshData().getNavMesh(), 1);
         }
 
         if (gameObject.getChildren() != null) {
