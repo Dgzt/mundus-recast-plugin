@@ -3,6 +3,7 @@ package com.github.dgzt.mundus.plugin.recast.creator
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.files.FileHandle
 import com.github.dgzt.mundus.plugin.recast.PropertyManager
+import com.github.dgzt.mundus.plugin.recast.component.NavMeshAsset
 import com.github.dgzt.mundus.plugin.recast.component.RecastNavMeshComponent
 import com.github.jamestkhan.recast.NavMeshGenSettings
 import com.github.jamestkhan.recast.utils.NavMeshGenerator
@@ -63,7 +64,7 @@ object ComponentWidgetCreator {
                 Gdx.app.postRunnable {
                     // TODO handle asset already exception
                     val asset = PropertyManager.assetManager.createNewAsset(tmpFile)
-                    component.asset = asset
+                    component.navMeshAssets.add(NavMeshAsset(asset, navMeshData))
 
                     tmpFile.delete()
                 }

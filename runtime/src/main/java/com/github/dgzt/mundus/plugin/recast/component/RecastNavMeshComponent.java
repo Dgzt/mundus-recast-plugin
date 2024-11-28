@@ -1,5 +1,6 @@
 package com.github.dgzt.mundus.plugin.recast.component;
 
+import com.badlogic.gdx.utils.Array;
 import com.github.jamestkhan.recast.NavMeshData;
 import com.mbrlabs.mundus.commons.assets.CustomAsset;
 import com.mbrlabs.mundus.commons.scene3d.GameObject;
@@ -8,12 +9,15 @@ import com.mbrlabs.mundus.commons.scene3d.components.Component;
 
 public class RecastNavMeshComponent extends AbstractComponent {
 
-    private CustomAsset asset;
-    private NavMeshData navMeshData;
+//    private CustomAsset asset;
+//    private NavMeshData navMeshData;
+
+    private final Array<NavMeshAsset> navMeshAssets;
 
     public RecastNavMeshComponent(final GameObject go) {
         super(go);
         type = Type.NAVMESH;
+        navMeshAssets = new Array<>();
     }
 
     @Override
@@ -28,19 +32,7 @@ public class RecastNavMeshComponent extends AbstractComponent {
         return cloned;
     }
 
-    public CustomAsset getAsset() {
-        return asset;
-    }
-
-    public void setAsset(final CustomAsset asset) {
-        this.asset = asset;
-    }
-
-    public NavMeshData getNavMeshData() {
-        return navMeshData;
-    }
-
-    public void setNavMeshData(final NavMeshData navMeshData) {
-        this.navMeshData = navMeshData;
+    public Array<NavMeshAsset> getNavMeshAssets() {
+        return navMeshAssets;
     }
 }

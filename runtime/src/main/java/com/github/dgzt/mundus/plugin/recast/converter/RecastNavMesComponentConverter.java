@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ObjectMap;
 import com.badlogic.gdx.utils.OrderedMap;
+import com.github.dgzt.mundus.plugin.recast.component.NavMeshAsset;
 import com.github.dgzt.mundus.plugin.recast.component.RecastNavMeshComponent;
 import com.github.jamestkhan.recast.NavMeshData;
 import com.github.jamestkhan.recast.utils.NavMeshIO;
@@ -36,9 +37,13 @@ public class RecastNavMesComponentConverter implements CustomComponentConverter 
         }
 
         final RecastNavMeshComponent recastNavMeshComponent = (RecastNavMeshComponent) component;
+        final Array<NavMeshAsset> navMeshAssets = recastNavMeshComponent.getNavMeshAssets();
 
         final Array<String> assetIds = new Array<>();
-        assetIds.add(recastNavMeshComponent.getAsset().getID());
+        for (int i = 0; i < navMeshAssets.size; ++i) {
+            final NavMeshAsset navMeshAsset = navMeshAssets.get(i);
+            assetIds.add(navMeshAsset.getAsset().getID());
+        }
 
         return assetIds;
     }
@@ -48,12 +53,12 @@ public class RecastNavMesComponentConverter implements CustomComponentConverter 
         final RecastNavMeshComponent component = new RecastNavMeshComponent(gameObject);
         Gdx.app.log("objectMap", "" + objectMap.size);
         if (objectMap.entries().hasNext) {
-            component.setAsset((CustomAsset) objectMap.entries().next().value);
+            final CustomAsset customAsset = (CustomAsset) objectMap.entries().next().value;
 
             try {
-                final NavMesh navMesh = NavMeshIO.load(component.getAsset().getFile());
+                final NavMesh navMesh = NavMeshIO.load(customAsset.getFile());
                 final NavMeshData navMeshData = new NavMeshData(navMesh);
-                component.setNavMeshData(navMeshData);
+                component.getNavMeshAssets().add(new NavMeshAsset(customAsset, navMeshData));
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }

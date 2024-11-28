@@ -1,6 +1,8 @@
 package com.github.dgzt.mundus.plugin.recast.debug;
 
 import com.badlogic.gdx.graphics.Camera;
+import com.badlogic.gdx.utils.Array;
+import com.github.dgzt.mundus.plugin.recast.component.NavMeshAsset;
 import com.github.dgzt.mundus.plugin.recast.component.RecastNavMeshComponent;
 import com.github.jamestkhan.recast.debug.RecastDebugDraw;
 import com.mbrlabs.mundus.commons.scene3d.GameObject;
@@ -30,7 +32,10 @@ public class DebugRenderer {
         final RecastNavMeshComponent component = gameObject.findComponentByType(Component.Type.NAVMESH);
 
         if (component != null) {
-            recastDebugDraw.debugDrawNavMeshPolysWithFlags(component.getNavMeshData().getNavMesh(), 1);
+            final Array<NavMeshAsset> navMeshAssets = component.getNavMeshAssets();
+            for (int i = 0; i < navMeshAssets.size; ++i) {
+                recastDebugDraw.debugDrawNavMeshPolysWithFlags(navMeshAssets.get(i).getNavMeshData().getNavMesh(), 1);
+            }
         }
 
         if (gameObject.getChildren() != null) {
