@@ -118,6 +118,8 @@ object ComponentWidgetCreator {
                 val asset = PropertyManager.assetManager.createNewAsset(tmpFile)
 
                 asset.properties.put(AssetPropertyConstants.NAVMEESH_NAME, name)
+                asset.properties.put(AssetPropertyConstants.NAVMEESH_TILE_SIZE_X, tileSizeX.toString())
+                asset.properties.put(AssetPropertyConstants.NAVMEESH_TILE_SIZE_Y, tileSizeY.toString())
                 component.navMeshAssets.add(NavMeshAsset(asset, navMeshData))
 
                 PropertyManager.assetManager.markAsModifiedAsset(asset)
