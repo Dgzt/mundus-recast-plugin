@@ -27,7 +27,8 @@ object ComponentWidgetCreator {
         var newNavMeshWidgetRootCell: RootWidgetCell? = null
         val alreadyNavMeshesWidgetRootCell = rootWidget.addEmptyWidget()
         alreadyNavMeshesWidgetRootCell.grow()
-        addAlreadyNavMeshes(component, alreadyNavMeshesWidgetRootCell.rootWidget)
+        val alreadyNavMeshesWidgetRoot = alreadyNavMeshesWidgetRootCell.rootWidget
+        addAlreadyNavMeshes(component, alreadyNavMeshesWidgetRoot)
         rootWidget.addRow()
         rootWidget.addTextButton("New NavMesh") {
             if (runningNavMeshGenerating != null) {
@@ -36,7 +37,7 @@ object ComponentWidgetCreator {
 
             val newNavMeshWidgetRoot = newNavMeshWidgetRootCell!!.rootWidget
             newNavMeshWidgetRoot.clearWidgets()
-            addNewNavMeshWidget(component, newNavMeshWidgetRoot)
+            addNewNavMeshWidget(component, newNavMeshWidgetRoot, alreadyNavMeshesWidgetRoot)
         }.setAlign(WidgetAlign.CENTER)
         rootWidget.addRow()
         newNavMeshWidgetRootCell = rootWidget.addEmptyWidget()
@@ -60,18 +61,18 @@ object ComponentWidgetCreator {
         }
     }
 
-    private fun addNewNavMeshWidget(component: RecastNavMeshComponent, rootWidget: RootWidget) {
+    private fun addNewNavMeshWidget(component: RecastNavMeshComponent, newNavMeshWidgetRoot: RootWidget, alreadyNavMeshesWidgetRoot: RootWidget) {
         var tileSizeX = TILE_SIZE_X_DEFAULT_VALUE
         var tileSizeY = TILE_SIZE_Y_DEFAULT_VALUE
         var name = ""
 
-        rootWidget.addTextField { name = it }.grow().setAlign(WidgetAlign.LEFT)
-        rootWidget.addRow()
-        rootWidget.addSpinner("Tile Size X", 8, Int.MAX_VALUE, tileSizeX) { tileSizeX = it }.setAlign(WidgetAlign.LEFT)
-        rootWidget.addRow()
-        rootWidget.addSpinner("Tile Size Y", 8, Int.MAX_VALUE, tileSizeY) { tileSizeY = it }.setAlign(WidgetAlign.LEFT)
-        rootWidget.addRow()
-        rootWidget.addTextButton("Generate NavMesh") {
+        newNavMeshWidgetRoot.addTextField { name = it }.grow().setAlign(WidgetAlign.LEFT)
+        newNavMeshWidgetRoot.addRow()
+        newNavMeshWidgetRoot.addSpinner("Tile Size X", 8, Int.MAX_VALUE, tileSizeX) { tileSizeX = it }.setAlign(WidgetAlign.LEFT)
+        newNavMeshWidgetRoot.addRow()
+        newNavMeshWidgetRoot.addSpinner("Tile Size Y", 8, Int.MAX_VALUE, tileSizeY) { tileSizeY = it }.setAlign(WidgetAlign.LEFT)
+        newNavMeshWidgetRoot.addRow()
+        newNavMeshWidgetRoot.addTextButton("Generate NavMesh") {
             val terrainComponent = findTerrainComponent(component)
             if (terrainComponent == null) {
                 // TODO text
@@ -83,16 +84,17 @@ object ComponentWidgetCreator {
                 return@addTextButton
             }
 
-            val navMeshGeneratorThread = createNavMeshGeneratorThread(component, terrainComponent, tileSizeX, tileSizeY, name)
+            val navMeshGeneratorThread = createNavMeshGeneratorThread(alreadyNavMeshesWidgetRoot, component, terrainComponent, tileSizeX, tileSizeY, name)
             val uiUpdaterThread = createUiUpdaterThread(navMeshGeneratorThread)
 
-            runningNavMeshGenerating = NavMeshGeneratingModel(component, navMeshGeneratorThread, uiUpdaterThread, rootWidget)
+            runningNavMeshGenerating = NavMeshGeneratingModel(component, navMeshGeneratorThread, uiUpdaterThread, newNavMeshWidgetRoot)
             runningNavMeshGenerating!!.navMeshGenerator.start()
             runningNavMeshGenerating!!.uiUpdater.start()
         }
     }
 
-    private fun createNavMeshGeneratorThread(component: RecastNavMeshComponent,
+    private fun createNavMeshGeneratorThread(alreadyNavMeshesWidgetRoot: RootWidget,
+                                             component: RecastNavMeshComponent,
                                             terrainComponent: TerrainComponent,
                                             tileSizeX: Int,
                                             tileSizeY: Int,
@@ -126,7 +128,8 @@ object ComponentWidgetCreator {
 
                 tmpFile.delete()
 
-                // TODO add to UI
+                alreadyNavMeshesWidgetRoot.clearWidgets()
+                addAlreadyNavMeshes(component, alreadyNavMeshesWidgetRoot)
             }
 
         }
