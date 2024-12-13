@@ -5,6 +5,7 @@ import com.badlogic.gdx.files.FileHandle
 import com.github.dgzt.mundus.plugin.recast.PropertyManager
 import com.github.dgzt.mundus.plugin.recast.component.NavMeshAsset
 import com.github.dgzt.mundus.plugin.recast.component.RecastNavMeshComponent
+import com.github.dgzt.mundus.plugin.recast.consant.AssetPropertyConstants
 import com.github.jamestkhan.recast.NavMeshGenSettings
 import com.github.jamestkhan.recast.utils.NavMeshGenerator
 import com.github.jamestkhan.recast.utils.NavMeshIO
@@ -21,6 +22,10 @@ object ComponentWidgetCreator {
 
     fun setup(component: RecastNavMeshComponent, rootWidget: RootWidget) {
         var newNavMeshWidgetRootCell: RootWidgetCell? = null
+        val alreadyNavMeshesWidgetRootCell = rootWidget.addEmptyWidget()
+        alreadyNavMeshesWidgetRootCell.grow()
+        addAlreadyNavMeshes(component, alreadyNavMeshesWidgetRootCell.rootWidget)
+        rootWidget.addRow()
         rootWidget.addTextButton("New NavMesh") {
             val newNavMeshWidgetRoot = newNavMeshWidgetRootCell!!.rootWidget
             newNavMeshWidgetRoot.clearWidgets()
@@ -30,10 +35,27 @@ object ComponentWidgetCreator {
         newNavMeshWidgetRootCell = rootWidget.addEmptyWidget()
     }
 
+    private fun addAlreadyNavMeshes(component: RecastNavMeshComponent, rootWidget: RootWidget) {
+        val navMeshAssets = component.navMeshAssets
+        for (navMeshAsset in navMeshAssets) {
+            println(navMeshAsset.asset.properties)
+            rootWidget.addLabel(navMeshAsset.asset.properties.get(AssetPropertyConstants.NAVMEESH_NAME))
+            rootWidget.addEmptyWidget().grow()
+            rootWidget.addTextButton("X") {
+                // TODO
+                println("Delete")
+            }
+            rootWidget.addRow()
+        }
+    }
+
     private fun addNewNavMeshWidget(component: RecastNavMeshComponent, rootWidget: RootWidget) {
         var tileSizeX = TILE_SIZE_X_DEFAULT_VALUE
         var tileSizeY = TILE_SIZE_Y_DEFAULT_VALUE
+        var name = ""
 
+        rootWidget.addTextField { name = it }.grow().setAlign(WidgetAlign.LEFT)
+        rootWidget.addRow()
         rootWidget.addSpinner("Tile Size X", 8, Int.MAX_VALUE, tileSizeX) { tileSizeX = it }.setAlign(WidgetAlign.LEFT)
         rootWidget.addRow()
         rootWidget.addSpinner("Tile Size Y", 8, Int.MAX_VALUE, tileSizeY) { tileSizeY = it }.setAlign(WidgetAlign.LEFT)
@@ -41,6 +63,11 @@ object ComponentWidgetCreator {
         rootWidget.addTextButton("Generate NavMesh") {
             val terrainComponent = findTerrainComponent(component)
             if (terrainComponent == null) {
+                // TODO text
+                return@addTextButton
+            }
+
+            if (name == "") {
                 // TODO text
                 return@addTextButton
             }
@@ -64,9 +91,15 @@ object ComponentWidgetCreator {
                 Gdx.app.postRunnable {
                     // TODO handle asset already exception
                     val asset = PropertyManager.assetManager.createNewAsset(tmpFile)
+
+                    asset.properties.put(AssetPropertyConstants.NAVMEESH_NAME, name)
                     component.navMeshAssets.add(NavMeshAsset(asset, navMeshData))
 
+                    PropertyManager.assetManager.markAsModifiedAsset(asset)
+
                     tmpFile.delete()
+
+                    // TODO add to UI
                 }
 
             }.start()
