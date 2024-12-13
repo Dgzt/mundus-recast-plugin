@@ -54,8 +54,10 @@ object ComponentWidgetCreator {
             rootWidget.addLabel(navMeshAsset.asset.properties.get(AssetPropertyConstants.NAVMEESH_NAME))
             rootWidget.addEmptyWidget().grow()
             rootWidget.addTextButton("X") {
-                // TODO
-                println("Delete")
+                PropertyManager.assetManager.deleteAsset(navMeshAsset.asset)
+                navMeshAssets.removeValue(navMeshAsset, true)
+                rootWidget.clearWidgets()
+                addAlreadyNavMeshes(component, rootWidget)
             }
             rootWidget.addRow()
         }
