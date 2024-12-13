@@ -6,6 +6,7 @@ import com.github.dgzt.mundus.plugin.recast.PropertyManager
 import com.github.dgzt.mundus.plugin.recast.component.NavMeshAsset
 import com.github.dgzt.mundus.plugin.recast.component.RecastNavMeshComponent
 import com.github.dgzt.mundus.plugin.recast.consant.AssetPropertyConstants
+import com.github.dgzt.mundus.plugin.recast.model.NavMeshGeneratingModel
 import com.github.jamestkhan.recast.NavMeshGenSettings
 import com.github.jamestkhan.recast.utils.NavMeshGenerator
 import com.github.jamestkhan.recast.utils.NavMeshIO
@@ -20,6 +21,8 @@ object ComponentWidgetCreator {
     private const val TILE_SIZE_X_DEFAULT_VALUE = 128
     private const val TILE_SIZE_Y_DEFAULT_VALUE = 128
 
+    private var runningNavMeshGenerating: NavMeshGeneratingModel? = null
+
     fun setup(component: RecastNavMeshComponent, rootWidget: RootWidget) {
         var newNavMeshWidgetRootCell: RootWidgetCell? = null
         val alreadyNavMeshesWidgetRootCell = rootWidget.addEmptyWidget()
@@ -27,6 +30,10 @@ object ComponentWidgetCreator {
         addAlreadyNavMeshes(component, alreadyNavMeshesWidgetRootCell.rootWidget)
         rootWidget.addRow()
         rootWidget.addTextButton("New NavMesh") {
+            if (runningNavMeshGenerating != null) {
+                return@addTextButton
+            }
+
             val newNavMeshWidgetRoot = newNavMeshWidgetRootCell!!.rootWidget
             newNavMeshWidgetRoot.clearWidgets()
             addNewNavMeshWidget(component, newNavMeshWidgetRoot)
@@ -72,41 +79,76 @@ object ComponentWidgetCreator {
                 return@addTextButton
             }
 
-            Thread {
-                val settings = NavMeshGenSettings.Builder.SettingsBuilder()
-                    .useTiles(true)
-                    .tileSizeX(tileSizeX)
-                    .tileSizeZ(tileSizeY)
-                    .build()
+            val navMeshGeneratorThread = createNavMeshGeneratorThread(component, terrainComponent, tileSizeX, tileSizeY, name)
+            val uiUpdaterThread = createUiUpdaterThread(navMeshGeneratorThread, rootWidget)
 
-                val navMeshGenerator = NavMeshGenerator(terrainComponent.modelInstance)
-                Gdx.app.log("Recast NavMesh Plugin", "Generating...")
-                val navMeshData = navMeshGenerator.build(settings)
-                Gdx.app.log("Recast NavMesh Plugin", "Generated.")
+            runningNavMeshGenerating = NavMeshGeneratingModel(navMeshGeneratorThread, uiUpdaterThread)
+            runningNavMeshGenerating!!.navMeshGenerator.start()
+            runningNavMeshGenerating!!.uiUpdater.start()
+        }
+    }
 
-                val tmpDir = System.getProperty("java.io.tmpdir")
-                val tmpFile = FileHandle("$tmpDir/${terrainComponent.gameObject.name}.navmesh")
-                NavMeshIO.save(navMeshData.navMesh, tmpFile)
+    private fun createNavMeshGeneratorThread(component: RecastNavMeshComponent,
+                                            terrainComponent: TerrainComponent,
+                                            tileSizeX: Int,
+                                            tileSizeY: Int,
+                                            name: String): Thread {
+        return Thread {
+            val settings = NavMeshGenSettings.Builder.SettingsBuilder()
+                .useTiles(true)
+                .tileSizeX(tileSizeX)
+                .tileSizeZ(tileSizeY)
+                .build()
 
-                Gdx.app.postRunnable {
-                    // TODO handle asset already exception
-                    val asset = PropertyManager.assetManager.createNewAsset(tmpFile)
+            val navMeshGenerator = NavMeshGenerator(terrainComponent.modelInstance)
+            Gdx.app.log("Recast NavMesh Plugin", "Generating...")
+            val navMeshData = navMeshGenerator.build(settings)
+            Gdx.app.log("Recast NavMesh Plugin", "Generated.")
 
-                    asset.properties.put(AssetPropertyConstants.NAVMEESH_NAME, name)
-                    component.navMeshAssets.add(NavMeshAsset(asset, navMeshData))
+            val tmpDir = System.getProperty("java.io.tmpdir")
+            val tmpFile = FileHandle("$tmpDir/${terrainComponent.gameObject.name}.navmesh")
+            NavMeshIO.save(navMeshData.navMesh, tmpFile)
 
-                    PropertyManager.assetManager.markAsModifiedAsset(asset)
+            Gdx.app.postRunnable {
+                // TODO handle asset already exception
+                val asset = PropertyManager.assetManager.createNewAsset(tmpFile)
 
-                    tmpFile.delete()
+                asset.properties.put(AssetPropertyConstants.NAVMEESH_NAME, name)
+                component.navMeshAssets.add(NavMeshAsset(asset, navMeshData))
 
-                    // TODO add to UI
-                }
+                PropertyManager.assetManager.markAsModifiedAsset(asset)
 
-            }.start()
+                tmpFile.delete()
 
+                // TODO add to UI
+
+                runningNavMeshGenerating = null
+            }
 
         }
+    }
 
+    private fun createUiUpdaterThread(navMeshGeneratorThread: Thread, rootWidget: RootWidget): Thread {
+        return Thread {
+            var count = 0
+            while (navMeshGeneratorThread.isAlive) {
+                Thread.sleep(1000)
+                if (++count > 3) {
+                    count = 0
+                }
+                var text = "Updating"
+                for (c in 0 until count) {
+                    text += "."
+                }
+                Gdx.app.postRunnable {
+                    rootWidget.clearWidgets()
+                    rootWidget.addLabel(text)
+                }
+            }
+            Gdx.app.postRunnable {
+                rootWidget.clearWidgets()
+            }
+        }
     }
 
     private fun findTerrainComponent(component: Component): TerrainComponent? {
