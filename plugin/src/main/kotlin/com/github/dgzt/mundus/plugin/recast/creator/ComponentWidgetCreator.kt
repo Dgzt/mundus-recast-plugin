@@ -40,6 +40,10 @@ object ComponentWidgetCreator {
         }.setAlign(WidgetAlign.CENTER)
         rootWidget.addRow()
         newNavMeshWidgetRootCell = rootWidget.addEmptyWidget()
+
+        if (runningNavMeshGenerating?.component == component) {
+            runningNavMeshGenerating?.newNavMeshWidgetRoot = newNavMeshWidgetRootCell!!.rootWidget
+        }
     }
 
     private fun addAlreadyNavMeshes(component: RecastNavMeshComponent, rootWidget: RootWidget) {
@@ -80,9 +84,9 @@ object ComponentWidgetCreator {
             }
 
             val navMeshGeneratorThread = createNavMeshGeneratorThread(component, terrainComponent, tileSizeX, tileSizeY, name)
-            val uiUpdaterThread = createUiUpdaterThread(navMeshGeneratorThread, rootWidget)
+            val uiUpdaterThread = createUiUpdaterThread(navMeshGeneratorThread)
 
-            runningNavMeshGenerating = NavMeshGeneratingModel(navMeshGeneratorThread, uiUpdaterThread)
+            runningNavMeshGenerating = NavMeshGeneratingModel(component, navMeshGeneratorThread, uiUpdaterThread, rootWidget)
             runningNavMeshGenerating!!.navMeshGenerator.start()
             runningNavMeshGenerating!!.uiUpdater.start()
         }
@@ -121,14 +125,12 @@ object ComponentWidgetCreator {
                 tmpFile.delete()
 
                 // TODO add to UI
-
-                runningNavMeshGenerating = null
             }
 
         }
     }
 
-    private fun createUiUpdaterThread(navMeshGeneratorThread: Thread, rootWidget: RootWidget): Thread {
+    private fun createUiUpdaterThread(navMeshGeneratorThread: Thread): Thread {
         return Thread {
             var count = 0
             while (navMeshGeneratorThread.isAlive) {
@@ -136,18 +138,24 @@ object ComponentWidgetCreator {
                 if (++count > 3) {
                     count = 0
                 }
-                var text = "Updating"
+                var text = "Generating"
                 for (c in 0 until count) {
                     text += "."
                 }
+
+                val rootWidget = runningNavMeshGenerating!!.newNavMeshWidgetRoot
                 Gdx.app.postRunnable {
                     rootWidget.clearWidgets()
                     rootWidget.addLabel(text)
                 }
             }
+
+            val rootWidget = runningNavMeshGenerating!!.newNavMeshWidgetRoot
             Gdx.app.postRunnable {
                 rootWidget.clearWidgets()
             }
+
+            runningNavMeshGenerating = null
         }
     }
 
