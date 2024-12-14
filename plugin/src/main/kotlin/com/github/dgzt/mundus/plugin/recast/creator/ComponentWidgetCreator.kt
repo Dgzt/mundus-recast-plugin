@@ -12,6 +12,8 @@ import com.github.jamestkhan.recast.utils.NavMeshGenerator
 import com.github.jamestkhan.recast.utils.NavMeshIO
 import com.mbrlabs.mundus.commons.scene3d.components.Component
 import com.mbrlabs.mundus.commons.scene3d.components.TerrainComponent
+import com.mbrlabs.mundus.editorcommons.exceptions.AssetAlreadyExistsException
+import com.mbrlabs.mundus.editorcommons.types.ToastType
 import com.mbrlabs.mundus.pluginapi.ui.RootWidget
 import com.mbrlabs.mundus.pluginapi.ui.RootWidgetCell
 import com.mbrlabs.mundus.pluginapi.ui.WidgetAlign
@@ -86,6 +88,8 @@ object ComponentWidgetCreator {
                 return@addTextButton
             }
 
+            // TODO check name already exists
+
             val navMeshGeneratorThread = createNavMeshGeneratorThread(alreadyNavMeshesWidgetRoot, component, terrainComponent, tileSizeX, tileSizeY, name)
             val uiUpdaterThread = createUiUpdaterThread(navMeshGeneratorThread)
 
@@ -118,20 +122,24 @@ object ComponentWidgetCreator {
             NavMeshIO.save(navMeshData.navMesh, tmpFile)
 
             Gdx.app.postRunnable {
-                // TODO handle asset already exception
-                val asset = PropertyManager.assetManager.createNewAsset(tmpFile)
+                try {
+                    val asset = PropertyManager.assetManager.createNewAsset(tmpFile)
 
-                asset.properties.put(AssetPropertyConstants.NAVMEESH_NAME, name)
-                asset.properties.put(AssetPropertyConstants.NAVMEESH_TILE_SIZE_X, tileSizeX.toString())
-                asset.properties.put(AssetPropertyConstants.NAVMEESH_TILE_SIZE_Y, tileSizeY.toString())
-                component.navMeshAssets.add(NavMeshAsset(asset, navMeshData))
+                    asset.properties.put(AssetPropertyConstants.NAVMEESH_NAME, name)
+                    asset.properties.put(AssetPropertyConstants.NAVMEESH_TILE_SIZE_X, tileSizeX.toString())
+                    asset.properties.put(AssetPropertyConstants.NAVMEESH_TILE_SIZE_Y, tileSizeY.toString())
+                    component.navMeshAssets.add(NavMeshAsset(asset, navMeshData))
 
-                PropertyManager.assetManager.markAsModifiedAsset(asset)
+                    PropertyManager.assetManager.markAsModifiedAsset(asset)
 
-                tmpFile.delete()
-
-                alreadyNavMeshesWidgetRoot.clearWidgets()
-                addAlreadyNavMeshes(component, alreadyNavMeshesWidgetRoot)
+                    PropertyManager.toasterManager.success("NavMesh generated.")
+                } catch (ex: AssetAlreadyExistsException) {
+                    PropertyManager.toasterManager.sticky(ToastType.ERROR, "NavMesh asset already exist!")
+                } finally {
+                    tmpFile.delete()
+                    alreadyNavMeshesWidgetRoot.clearWidgets()
+                    addAlreadyNavMeshes(component, alreadyNavMeshesWidgetRoot)
+                }
             }
 
         }

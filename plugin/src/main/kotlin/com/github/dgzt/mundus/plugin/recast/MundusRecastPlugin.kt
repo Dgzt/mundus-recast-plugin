@@ -17,8 +17,10 @@ import com.mbrlabs.mundus.pluginapi.ComponentExtension
 import com.mbrlabs.mundus.pluginapi.CustomShaderRenderExtension
 import com.mbrlabs.mundus.pluginapi.EventExtension
 import com.mbrlabs.mundus.pluginapi.MenuExtension
+import com.mbrlabs.mundus.pluginapi.ToasterExtension
 import com.mbrlabs.mundus.pluginapi.manager.AssetManager
 import com.mbrlabs.mundus.pluginapi.manager.PluginEventManager
+import com.mbrlabs.mundus.pluginapi.manager.ToasterManager
 import com.mbrlabs.mundus.pluginapi.ui.RootWidget
 import org.pf4j.Extension
 import org.pf4j.Plugin
@@ -57,6 +59,13 @@ class MundusRecastPlugin : Plugin() {
     class RecastAssetExtension : AssetExtension {
         override fun assetManager(assetManager: AssetManager) {
             PropertyManager.assetManager = assetManager
+        }
+    }
+
+    @Extension
+    class RecastToasterExtension : ToasterExtension {
+        override fun toasterManager(toasterManager: ToasterManager) {
+            PropertyManager.toasterManager = toasterManager
         }
     }
 
