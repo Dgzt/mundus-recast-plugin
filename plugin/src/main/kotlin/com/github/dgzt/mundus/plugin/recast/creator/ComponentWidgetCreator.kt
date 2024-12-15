@@ -118,7 +118,7 @@ object ComponentWidgetCreator {
             Gdx.app.log("Recast NavMesh Plugin", "Generated.")
 
             val tmpDir = System.getProperty("java.io.tmpdir")
-            val tmpFile = FileHandle("$tmpDir/${terrainComponent.gameObject.name}.navmesh")
+            val tmpFile = FileHandle("$tmpDir/${terrainComponent.gameObject.name}-$name.navmesh")
             NavMeshIO.save(navMeshData.navMesh, tmpFile)
 
             Gdx.app.postRunnable {
