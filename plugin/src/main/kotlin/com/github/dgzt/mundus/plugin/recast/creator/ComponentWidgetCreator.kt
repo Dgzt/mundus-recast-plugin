@@ -20,8 +20,11 @@ import com.mbrlabs.mundus.pluginapi.ui.WidgetAlign
 
 object ComponentWidgetCreator {
 
+    private const val RIGHT_PAD = 3f
+    private const val BOTTOM_PAD = 3f
     private const val TILE_SIZE_X_DEFAULT_VALUE = 128
     private const val TILE_SIZE_Y_DEFAULT_VALUE = 128
+
 
     private var runningNavMeshGenerating: NavMeshGeneratingModel? = null
 
@@ -40,9 +43,10 @@ object ComponentWidgetCreator {
             val newNavMeshWidgetRoot = newNavMeshWidgetRootCell!!.rootWidget
             newNavMeshWidgetRoot.clearWidgets()
             addNewNavMeshWidget(component, newNavMeshWidgetRoot, alreadyNavMeshesWidgetRoot)
-        }.setAlign(WidgetAlign.CENTER)
+        }.setPad(0f, 0f, BOTTOM_PAD, 0f).setAlign(WidgetAlign.CENTER)
         rootWidget.addRow()
         newNavMeshWidgetRootCell = rootWidget.addEmptyWidget()
+        newNavMeshWidgetRootCell.grow()
 
         if (runningNavMeshGenerating?.component == component) {
             runningNavMeshGenerating?.newNavMeshWidgetRoot = newNavMeshWidgetRootCell!!.rootWidget
@@ -68,13 +72,30 @@ object ComponentWidgetCreator {
     private fun addNewNavMeshWidget(component: RecastNavMeshComponent, newNavMeshWidgetRoot: RootWidget, alreadyNavMeshesWidgetRoot: RootWidget) {
         var tileSizeX = TILE_SIZE_X_DEFAULT_VALUE
         var tileSizeY = TILE_SIZE_Y_DEFAULT_VALUE
+        var agentRadius = 0.6f
+        var agentHeight = 2.0f
+        var agentMaxClimb = 0.89f
+        var agentMaxSlope = 45.0f
         var name = ""
 
-        newNavMeshWidgetRoot.addTextField { name = it }.grow().setAlign(WidgetAlign.LEFT)
+        val nameWidget = newNavMeshWidgetRoot.addEmptyWidget()
+        nameWidget.grow().setPad(0f, 0f, BOTTOM_PAD, 0f).setAlign(WidgetAlign.LEFT)
+        nameWidget.rootWidget.addLabel("Name").setPad(0f, RIGHT_PAD, 0f, 0f)
+        nameWidget.rootWidget.addTextField { name = it }.setAlign(WidgetAlign.LEFT)
+        nameWidget.rootWidget.addEmptyWidget().grow()
+
         newNavMeshWidgetRoot.addRow()
-        newNavMeshWidgetRoot.addSpinner("Tile Size X", 8, Int.MAX_VALUE, tileSizeX) { tileSizeX = it }.setAlign(WidgetAlign.LEFT)
+        newNavMeshWidgetRoot.addSpinner("Tile Size X", 8, Int.MAX_VALUE, tileSizeX) { tileSizeX = it }.setPad(0f, 0f, BOTTOM_PAD, 0f).setAlign(WidgetAlign.LEFT)
         newNavMeshWidgetRoot.addRow()
-        newNavMeshWidgetRoot.addSpinner("Tile Size Y", 8, Int.MAX_VALUE, tileSizeY) { tileSizeY = it }.setAlign(WidgetAlign.LEFT)
+        newNavMeshWidgetRoot.addSpinner("Tile Size Y", 8, Int.MAX_VALUE, tileSizeY) { tileSizeY = it }.setPad(0f, 0f, BOTTOM_PAD, 0f).setAlign(WidgetAlign.LEFT)
+        newNavMeshWidgetRoot.addRow()
+        newNavMeshWidgetRoot.addSpinner("Agent radius", 0.1f, Float.MAX_VALUE, agentRadius) { agentRadius = it }.setPad(0f, 0f, BOTTOM_PAD, 0f).setAlign(WidgetAlign.LEFT)
+        newNavMeshWidgetRoot.addRow()
+        newNavMeshWidgetRoot.addSpinner("Agent height", 0.1f, Float.MAX_VALUE, agentHeight) { agentHeight = it}.setPad(0f, 0f, BOTTOM_PAD, 0f).setAlign(WidgetAlign.LEFT)
+        newNavMeshWidgetRoot.addRow()
+        newNavMeshWidgetRoot.addSpinner("Agent max climb", 0.1f, Float.MAX_VALUE, agentMaxClimb) { agentMaxClimb = it }.setPad(0f, 0f, BOTTOM_PAD, 0f).setAlign(WidgetAlign.LEFT)
+        newNavMeshWidgetRoot.addRow()
+        newNavMeshWidgetRoot.addSpinner("Agent max slope", 0.1f, Float.MAX_VALUE, agentMaxSlope) { agentMaxSlope = it }.setPad(0f, 0f, BOTTOM_PAD, 0f).setAlign(WidgetAlign.LEFT)
         newNavMeshWidgetRoot.addRow()
         newNavMeshWidgetRoot.addTextButton("Generate NavMesh") {
             val terrainComponent = findTerrainComponent(component)
@@ -90,7 +111,8 @@ object ComponentWidgetCreator {
 
             // TODO check name already exists
 
-            val navMeshGeneratorThread = createNavMeshGeneratorThread(alreadyNavMeshesWidgetRoot, component, terrainComponent, tileSizeX, tileSizeY, name)
+            val navMeshGeneratorThread = createNavMeshGeneratorThread(alreadyNavMeshesWidgetRoot, component, terrainComponent, tileSizeX, tileSizeY,
+                agentRadius, agentHeight, agentMaxClimb, agentMaxSlope, name)
             val uiUpdaterThread = createUiUpdaterThread(navMeshGeneratorThread)
 
             runningNavMeshGenerating = NavMeshGeneratingModel(component, navMeshGeneratorThread, uiUpdaterThread, newNavMeshWidgetRoot)
@@ -101,15 +123,23 @@ object ComponentWidgetCreator {
 
     private fun createNavMeshGeneratorThread(alreadyNavMeshesWidgetRoot: RootWidget,
                                              component: RecastNavMeshComponent,
-                                            terrainComponent: TerrainComponent,
-                                            tileSizeX: Int,
-                                            tileSizeY: Int,
-                                            name: String): Thread {
+                                             terrainComponent: TerrainComponent,
+                                             tileSizeX: Int,
+                                             tileSizeY: Int,
+                                             agentRadius: Float,
+                                             agentHeight: Float,
+                                             agentMaxClimb: Float,
+                                             agentMaxSlope: Float,
+                                             name: String): Thread {
         return Thread {
             val settings = NavMeshGenSettings.Builder.SettingsBuilder()
                 .useTiles(true)
                 .tileSizeX(tileSizeX)
                 .tileSizeZ(tileSizeY)
+                .agentRadius(agentRadius)
+                .agentHeight(agentHeight)
+                .agentMaxClimb(agentMaxClimb)
+                .agentMaxSlope(agentMaxSlope)
                 .build()
 
             val navMeshGenerator = NavMeshGenerator(terrainComponent.modelInstance)
@@ -128,6 +158,10 @@ object ComponentWidgetCreator {
                     asset.properties.put(AssetPropertyConstants.NAVMEESH_NAME, name)
                     asset.properties.put(AssetPropertyConstants.NAVMEESH_TILE_SIZE_X, tileSizeX.toString())
                     asset.properties.put(AssetPropertyConstants.NAVMEESH_TILE_SIZE_Y, tileSizeY.toString())
+                    asset.properties.put(AssetPropertyConstants.NAVMEESH_AGENT_RADIUS, agentRadius.toString())
+                    asset.properties.put(AssetPropertyConstants.NAVMEESH_AGENT_HEIGHT, agentHeight.toString())
+                    asset.properties.put(AssetPropertyConstants.NAVMEESH_AGENT_MAX_CLIMB, agentMaxClimb.toString())
+                    asset.properties.put(AssetPropertyConstants.NAVMEESH_AGENT_MAX_SLOPE, agentMaxSlope.toString())
                     component.navMeshAssets.add(NavMeshAsset(asset, navMeshData))
 
                     PropertyManager.assetManager.markAsModifiedAsset(asset)
