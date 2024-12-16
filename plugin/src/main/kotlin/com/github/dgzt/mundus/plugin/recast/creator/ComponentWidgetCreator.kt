@@ -50,6 +50,7 @@ object ComponentWidgetCreator {
 
         if (runningNavMeshGenerating?.component == component) {
             runningNavMeshGenerating?.newNavMeshWidgetRoot = newNavMeshWidgetRootCell!!.rootWidget
+            runningNavMeshGenerating?.alreadyNavMeshesWidgetRoot = alreadyNavMeshesWidgetRoot
             runningNavMeshGenerating?.generatingLabel = null
         }
     }
@@ -112,18 +113,17 @@ object ComponentWidgetCreator {
 
             // TODO check name already exists
 
-            val navMeshGeneratorThread = createNavMeshGeneratorThread(alreadyNavMeshesWidgetRoot, component, terrainComponent, tileSizeX, tileSizeY,
+            val navMeshGeneratorThread = createNavMeshGeneratorThread(component, terrainComponent, tileSizeX, tileSizeY,
                 agentRadius, agentHeight, agentMaxClimb, agentMaxSlope, name)
             val uiUpdaterThread = createUiUpdaterThread(navMeshGeneratorThread)
 
-            runningNavMeshGenerating = NavMeshGeneratingModel(component, navMeshGeneratorThread, uiUpdaterThread, newNavMeshWidgetRoot)
+            runningNavMeshGenerating = NavMeshGeneratingModel(component, navMeshGeneratorThread, uiUpdaterThread, newNavMeshWidgetRoot, alreadyNavMeshesWidgetRoot)
             runningNavMeshGenerating!!.navMeshGenerator.start()
             runningNavMeshGenerating!!.uiUpdater.start()
         }
     }
 
-    private fun createNavMeshGeneratorThread(alreadyNavMeshesWidgetRoot: RootWidget,
-                                             component: RecastNavMeshComponent,
+    private fun createNavMeshGeneratorThread(component: RecastNavMeshComponent,
                                              terrainComponent: TerrainComponent,
                                              tileSizeX: Int,
                                              tileSizeY: Int,
@@ -172,8 +172,8 @@ object ComponentWidgetCreator {
                     PropertyManager.toasterManager.sticky(ToastType.ERROR, "NavMesh asset already exist!")
                 } finally {
                     tmpFile.delete()
-                    alreadyNavMeshesWidgetRoot.clearWidgets()
-                    addAlreadyNavMeshes(component, alreadyNavMeshesWidgetRoot)
+                    runningNavMeshGenerating?.alreadyNavMeshesWidgetRoot?.clearWidgets()
+                    addAlreadyNavMeshes(component, runningNavMeshGenerating?.alreadyNavMeshesWidgetRoot!!)
                 }
             }
 

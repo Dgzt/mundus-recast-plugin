@@ -9,5 +9,6 @@ class NavMeshGeneratingModel(
     val navMeshGenerator: Thread,
     val uiUpdater: Thread,
     var newNavMeshWidgetRoot: RootWidget,
+    var alreadyNavMeshesWidgetRoot: RootWidget,
     var generatingLabel: Label? = null
 )
