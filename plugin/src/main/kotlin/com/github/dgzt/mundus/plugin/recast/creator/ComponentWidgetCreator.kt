@@ -50,6 +50,7 @@ object ComponentWidgetCreator {
 
         if (runningNavMeshGenerating?.component == component) {
             runningNavMeshGenerating?.newNavMeshWidgetRoot = newNavMeshWidgetRootCell!!.rootWidget
+            runningNavMeshGenerating?.generatingLabel = null
         }
     }
 
@@ -194,8 +195,12 @@ object ComponentWidgetCreator {
 
                 val rootWidget = runningNavMeshGenerating!!.newNavMeshWidgetRoot
                 Gdx.app.postRunnable {
-                    rootWidget.clearWidgets()
-                    rootWidget.addLabel(text)
+                    if (runningNavMeshGenerating?.generatingLabel == null) {
+                        rootWidget.clearWidgets()
+                        runningNavMeshGenerating?.generatingLabel = rootWidget.addLabel(text).label
+                    } else {
+                        runningNavMeshGenerating?.generatingLabel?.setText(text)
+                    }
                 }
             }
 
