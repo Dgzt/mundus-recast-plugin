@@ -28,6 +28,19 @@ public class DebugRenderer {
         render(sceneGraph.getRoot());
     }
 
+    /**
+     * Renders path.
+     *
+     * @param path The path.
+     */
+    public void render(Array<float[]> path) {
+        if (!enabled) {
+            return;
+        }
+
+        recastDebugDraw.renderPath(path);
+    }
+
     private void render(final GameObject gameObject) {
         final RecastNavMeshComponent component = gameObject.findComponentByType(Component.Type.NAVMESH);
 
