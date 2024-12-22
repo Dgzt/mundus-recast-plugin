@@ -1,6 +1,7 @@
 package com.github.dgzt.mundus.plugin.recast
 
 import com.badlogic.gdx.graphics.Camera
+import com.badlogic.gdx.utils.Array
 import com.github.dgzt.mundus.plugin.recast.component.RecastNavMeshComponent
 import com.github.dgzt.mundus.plugin.recast.converter.RecastNavMesComponentConverter
 import com.github.dgzt.mundus.plugin.recast.creator.ComponentCreator
@@ -43,6 +44,12 @@ class MundusRecastPlugin : Plugin() {
 
     @Extension
     class RecastComponentExtension : ComponentExtension {
+        override fun getSupportedComponentTypes(): Array<Component.Type> {
+            val array = Array<Component.Type>()
+            array.add(Component.Type.TERRAIN)
+            return array
+        }
+
         override fun getComponentType(): Component.Type = Component.Type.NAVMESH
 
         override fun getComponentName(): String = "Recast NavMesh"
