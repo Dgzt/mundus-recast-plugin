@@ -25,7 +25,7 @@ repositories {
 
 dependencies {
     api("org.pf4j:pf4j:3.10.0")
-    api("com.badlogicgames.gdx:gdx:1.12.0")
+    api("com.badlogicgames.gdx:gdx:1.13.0")
     kapt("org.pf4j:pf4j:3.11.0")
 
     api(project(":runtime"))
