@@ -2,6 +2,7 @@ package com.github.dgzt.mundus.plugin.recast.creator
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.files.FileHandle
+import com.badlogic.gdx.graphics.g3d.ModelInstance
 import com.github.dgzt.mundus.plugin.recast.PropertyManager
 import com.github.dgzt.mundus.plugin.recast.component.NavMeshAsset
 import com.github.dgzt.mundus.plugin.recast.component.RecastNavMeshComponent
@@ -17,6 +18,8 @@ import com.mbrlabs.mundus.editorcommons.types.ToastType
 import com.mbrlabs.mundus.pluginapi.ui.RootWidget
 import com.mbrlabs.mundus.pluginapi.ui.RootWidgetCell
 import com.mbrlabs.mundus.pluginapi.ui.WidgetAlign
+import com.badlogic.gdx.utils.Array
+import com.mbrlabs.mundus.commons.scene3d.GameObject
 
 object ComponentWidgetCreator {
 
@@ -100,8 +103,8 @@ object ComponentWidgetCreator {
         newNavMeshWidgetRoot.addSpinner("Agent max slope", 0.1f, Float.MAX_VALUE, agentMaxSlope) { agentMaxSlope = it }.setPad(0f, 0f, BOTTOM_PAD, 0f).setAlign(WidgetAlign.LEFT)
         newNavMeshWidgetRoot.addRow()
         newNavMeshWidgetRoot.addTextButton("Generate NavMesh") {
-            val terrainComponent = findTerrainComponent(component)
-            if (terrainComponent == null) {
+            val terrainComponents = findTerrainComponents(component.gameObject)
+            if (terrainComponents.isEmpty) {
                 // TODO text
                 return@addTextButton
             }
@@ -113,7 +116,7 @@ object ComponentWidgetCreator {
 
             // TODO check name already exists
 
-            val navMeshGeneratorThread = createNavMeshGeneratorThread(component, terrainComponent, tileSizeX, tileSizeY,
+            val navMeshGeneratorThread = createNavMeshGeneratorThread(component, terrainComponents, tileSizeX, tileSizeY,
                 agentRadius, agentHeight, agentMaxClimb, agentMaxSlope, name)
             val uiUpdaterThread = createUiUpdaterThread(navMeshGeneratorThread)
 
@@ -124,7 +127,7 @@ object ComponentWidgetCreator {
     }
 
     private fun createNavMeshGeneratorThread(component: RecastNavMeshComponent,
-                                             terrainComponent: TerrainComponent,
+                                             terrainComponents: Array<TerrainComponent>,
                                              tileSizeX: Int,
                                              tileSizeY: Int,
                                              agentRadius: Float,
@@ -143,13 +146,15 @@ object ComponentWidgetCreator {
                 .agentMaxSlope(agentMaxSlope)
                 .build()
 
-            val navMeshGenerator = NavMeshGenerator(terrainComponent.modelInstance)
+            val terrainModelInstances = getTerrainModelInstances(terrainComponents)
+
+            val navMeshGenerator = NavMeshGenerator(terrainModelInstances)
             Gdx.app.log("Recast NavMesh Plugin", "Generating...")
             val navMeshData = navMeshGenerator.build(settings)
             Gdx.app.log("Recast NavMesh Plugin", "Generated.")
 
             val tmpDir = System.getProperty("java.io.tmpdir")
-            val tmpFile = FileHandle("$tmpDir/${terrainComponent.gameObject.name}-$name.navmesh")
+            val tmpFile = FileHandle("$tmpDir/${component.gameObject.name}-$name.navmesh")
             NavMeshIO.save(navMeshData.navMesh, tmpFile)
 
             Gdx.app.postRunnable {
@@ -213,8 +218,30 @@ object ComponentWidgetCreator {
         }
     }
 
-    private fun findTerrainComponent(component: Component): TerrainComponent? {
-        val gameObject = component.gameObject
-        return gameObject.findComponentByType(Component.Type.TERRAIN)
+    private fun findTerrainComponents(gameObject: GameObject): Array<TerrainComponent> {
+        val retArray = Array<TerrainComponent>()
+
+        val terrainComponent = gameObject.findComponentByType<TerrainComponent>(Component.Type.TERRAIN)
+        if (terrainComponent != null) {
+            retArray.add(terrainComponent)
+        } else {
+            val children = gameObject.findChildrenByComponent(Component.Type.TERRAIN)
+            for (child in children) {
+                val childTerrainComponent = child.findComponentByType<TerrainComponent>(Component.Type.TERRAIN)
+                retArray.add(childTerrainComponent)
+            }
+        }
+
+        return retArray
+    }
+
+    private fun getTerrainModelInstances(terrainComponents: Array<TerrainComponent>): Array<ModelInstance> {
+        val retArray = Array<ModelInstance>()
+
+        for (terrainComponent in terrainComponents) {
+            retArray.add(terrainComponent.modelInstance)
+        }
+
+        return retArray
     }
 }

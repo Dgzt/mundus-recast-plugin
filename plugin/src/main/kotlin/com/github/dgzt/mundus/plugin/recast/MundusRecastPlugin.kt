@@ -47,6 +47,7 @@ class MundusRecastPlugin : Plugin() {
         override fun getSupportedComponentTypes(): Array<Component.Type> {
             val array = Array<Component.Type>()
             array.add(Component.Type.TERRAIN)
+            array.add(Component.Type.TERRAIN_MANAGER)
             return array
         }
 
