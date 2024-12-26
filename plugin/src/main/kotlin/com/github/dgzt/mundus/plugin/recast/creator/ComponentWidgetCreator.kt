@@ -2,6 +2,8 @@ package com.github.dgzt.mundus.plugin.recast.creator
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.files.FileHandle
+import com.badlogic.gdx.graphics.g3d.ModelInstance
+import com.badlogic.gdx.utils.Array
 import com.github.dgzt.mundus.plugin.recast.PropertyManager
 import com.github.dgzt.mundus.plugin.recast.component.NavMeshAsset
 import com.github.dgzt.mundus.plugin.recast.component.RecastNavMeshComponent
@@ -11,6 +13,7 @@ import com.github.jamestkhan.recast.NavMeshGenSettings
 import com.github.jamestkhan.recast.utils.NavMeshGenerator
 import com.github.jamestkhan.recast.utils.NavMeshIO
 import com.mbrlabs.mundus.commons.scene3d.components.Component
+import com.mbrlabs.mundus.commons.scene3d.components.ModelComponent
 import com.mbrlabs.mundus.commons.scene3d.components.TerrainComponent
 import com.mbrlabs.mundus.editorcommons.exceptions.AssetAlreadyExistsException
 import com.mbrlabs.mundus.editorcommons.types.ToastType
@@ -143,7 +146,11 @@ object ComponentWidgetCreator {
                 .agentMaxSlope(agentMaxSlope)
                 .build()
 
-            val navMeshGenerator = NavMeshGenerator(terrainComponent.modelInstance)
+            val modelInstances = Array<ModelInstance>()
+            modelInstances.addAll(terrainComponent.modelInstance)
+            modelInstances.addAll(findAllActiveModelInstances(component))
+
+            val navMeshGenerator = NavMeshGenerator(modelInstances)
             Gdx.app.log("Recast NavMesh Plugin", "Generating...")
             val navMeshData = navMeshGenerator.build(settings)
             Gdx.app.log("Recast NavMesh Plugin", "Generated.")
@@ -216,5 +223,21 @@ object ComponentWidgetCreator {
     private fun findTerrainComponent(component: Component): TerrainComponent? {
         val gameObject = component.gameObject
         return gameObject.findComponentByType(Component.Type.TERRAIN)
+    }
+
+    private fun findAllActiveModelInstances(navMeshComponent: RecastNavMeshComponent): Array<ModelInstance> {
+        val retArray = Array<ModelInstance>()
+
+        val modelComponents = navMeshComponent.gameObject.sceneGraph.root.findComponentsByType<ModelComponent>(Array(), Component.Type.MODEL, true)
+
+        for (i in 0 until modelComponents.size) {
+            val modelComponent = modelComponents.get(i)
+
+            if (modelComponent.gameObject.active) {
+                retArray.add(modelComponent.modelInstance)
+            }
+        }
+
+        return retArray
     }
 }
