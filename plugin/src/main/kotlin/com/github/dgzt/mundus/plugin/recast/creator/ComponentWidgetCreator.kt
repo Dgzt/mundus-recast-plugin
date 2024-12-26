@@ -3,6 +3,7 @@ package com.github.dgzt.mundus.plugin.recast.creator
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.files.FileHandle
 import com.badlogic.gdx.graphics.g3d.ModelInstance
+import com.badlogic.gdx.utils.Array
 import com.github.dgzt.mundus.plugin.recast.PropertyManager
 import com.github.dgzt.mundus.plugin.recast.component.NavMeshAsset
 import com.github.dgzt.mundus.plugin.recast.component.RecastNavMeshComponent
@@ -12,13 +13,13 @@ import com.github.jamestkhan.recast.NavMeshGenSettings
 import com.github.jamestkhan.recast.utils.NavMeshGenerator
 import com.github.jamestkhan.recast.utils.NavMeshIO
 import com.mbrlabs.mundus.commons.scene3d.components.Component
+import com.mbrlabs.mundus.commons.scene3d.components.ModelComponent
 import com.mbrlabs.mundus.commons.scene3d.components.TerrainComponent
 import com.mbrlabs.mundus.editorcommons.exceptions.AssetAlreadyExistsException
 import com.mbrlabs.mundus.editorcommons.types.ToastType
 import com.mbrlabs.mundus.pluginapi.ui.RootWidget
 import com.mbrlabs.mundus.pluginapi.ui.RootWidgetCell
 import com.mbrlabs.mundus.pluginapi.ui.WidgetAlign
-import com.badlogic.gdx.utils.Array
 import com.mbrlabs.mundus.commons.scene3d.GameObject
 
 object ComponentWidgetCreator {
@@ -146,9 +147,11 @@ object ComponentWidgetCreator {
                 .agentMaxSlope(agentMaxSlope)
                 .build()
 
-            val terrainModelInstances = getTerrainModelInstances(terrainComponents)
+            val modelInstances = Array<ModelInstance>()
+            modelInstances.addAll(getTerrainModelInstances(terrainComponents))
+            modelInstances.addAll(findAllActiveModelInstances(component))
 
-            val navMeshGenerator = NavMeshGenerator(terrainModelInstances)
+            val navMeshGenerator = NavMeshGenerator(modelInstances)
             Gdx.app.log("Recast NavMesh Plugin", "Generating...")
             val navMeshData = navMeshGenerator.build(settings)
             Gdx.app.log("Recast NavMesh Plugin", "Generated.")
@@ -240,6 +243,22 @@ object ComponentWidgetCreator {
 
         for (terrainComponent in terrainComponents) {
             retArray.add(terrainComponent.modelInstance)
+        }
+
+        return retArray
+    }
+
+    private fun findAllActiveModelInstances(navMeshComponent: RecastNavMeshComponent): Array<ModelInstance> {
+        val retArray = Array<ModelInstance>()
+
+        val modelComponents = navMeshComponent.gameObject.sceneGraph.root.findComponentsByType<ModelComponent>(Array(), Component.Type.MODEL, true)
+
+        for (i in 0 until modelComponents.size) {
+            val modelComponent = modelComponents.get(i)
+
+            if (modelComponent.gameObject.active) {
+                retArray.add(modelComponent.modelInstance)
+            }
         }
 
         return retArray
