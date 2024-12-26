@@ -31,9 +31,9 @@ dependencies {
     api(project(":runtime"))
 
     // TODO: Change to JamesTKhan's link after this branch merged
-    implementation("com.github.Dgzt.Mundus:commons:plugin-custom-asset-terrain-system-SNAPSHOT")
-    implementation("com.github.Dgzt.Mundus:plugin-api:plugin-custom-asset-terrain-system-SNAPSHOT")
-    implementation("com.github.Dgzt.Mundus:editor-commons:plugin-custom-asset-terrain-system-SNAPSHOT")
+    implementation("com.github.Dgzt.Mundus:commons:terrain-system-updated-with-plugin-custom-asset-SNAPSHOT")
+    implementation("com.github.Dgzt.Mundus:plugin-api:terrain-system-updated-with-plugin-custom-asset-SNAPSHOT")
+    implementation("com.github.Dgzt.Mundus:editor-commons:terrain-system-updated-with-plugin-custom-asset-SNAPSHOT")
 }
 
 // Apply a specific Java toolchain to ease working on different environments.
