@@ -24,16 +24,15 @@ repositories {
 }
 
 dependencies {
-    api("org.pf4j:pf4j:3.10.0")
-    api("com.badlogicgames.gdx:gdx:1.13.0")
-    kapt("org.pf4j:pf4j:3.11.0")
+    api("org.pf4j:pf4j:${project.properties["pf4jVersion"]}")
+    api("com.badlogicgames.gdx:gdx:${project.properties["libgdxVersion"]}")
+    kapt("org.pf4j:pf4j:${project.properties["pf4jVersion"]}")
 
     api(project(":runtime"))
 
     // TODO: Change to JamesTKhan's link after this branch merged
-    implementation("com.github.Dgzt.Mundus:commons:plugin-custom-asset-SNAPSHOT")
-    implementation("com.github.Dgzt.Mundus:plugin-api:plugin-custom-asset-SNAPSHOT")
-    implementation("com.github.Dgzt.Mundus:editor-commons:plugin-custom-asset-SNAPSHOT")
+    implementation("com.github.Dgzt.Mundus:plugin-api:${project.properties["mundusVersion"]}")
+    implementation("com.github.Dgzt.Mundus:editor-commons:${project.properties["mundusVersion"]}")
 }
 
 // Apply a specific Java toolchain to ease working on different environments.
@@ -62,7 +61,7 @@ tasks.withType<Jar> {
         .get()
         .filter {
             it.name.equals("runtime.jar") ||
-            it.name.equals("gdx-recast-ce15d46.jar") ||
+            it.name.equals("gdx-recast-${project.properties["gdxRecastVersion"]}.jar") ||
             it.name.equals("recast-gwt_migration_antz-SNAPSHOT.jar") ||
             it.name.equals("detour-gwt_migration_antz-SNAPSHOT.jar")
         }
