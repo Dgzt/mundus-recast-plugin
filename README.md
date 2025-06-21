@@ -14,7 +14,25 @@ Then you need to copy `plugin/build/libs/recasts-plugin.jar` jar file into your 
 
 ## Usage in Editor
 
-TODO
+Need to add `Recast NavMesh` component to terrain game object:
+
+![image](https://github.com/user-attachments/assets/d5b0bc42-0ac2-4526-8192-d20a10c2be2c)
+
+Add new navmesh:
+
+![image](https://github.com/user-attachments/assets/395a5e94-5a49-4f8b-8a81-7a6131bf6007)
+
+Add name to navhmesh and generate it:
+
+![image](https://github.com/user-attachments/assets/18156904-fc9f-4294-8baa-6aebed8cd2a2)
+
+Wait until the generation will be finished:
+
+![image](https://github.com/user-attachments/assets/5a5290f9-20e6-4709-a7b1-0d31ecfcc48c)
+
+![image](https://github.com/user-attachments/assets/fb0c7721-7f6f-4a3c-bda4-000292fea49d)
+
+And don't forget to save project and you can use it in runtime.
 
 ## Setup for Runtime
 
