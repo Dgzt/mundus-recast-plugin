@@ -24,7 +24,7 @@ repositories {
 
 dependencies {
     api("com.badlogicgames.gdx:gdx:${project.properties["libgdxVersion"]}")
-    api("com.github.Dgzt.Mundus:commons:${project.properties["mundusVersion"]}")
+    api("com.github.JamesTKhan.Mundus:commons:${project.properties["mundusVersion"]}")
     api("com.github.JamesTKhan:gdx-recast:${project.properties["gdxRecastVersion"]}")
 }
 

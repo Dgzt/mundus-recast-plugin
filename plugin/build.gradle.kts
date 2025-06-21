@@ -30,9 +30,8 @@ dependencies {
 
     api(project(":runtime"))
 
-    // TODO: Change to JamesTKhan's link after this branch merged
-    implementation("com.github.Dgzt.Mundus:plugin-api:${project.properties["mundusVersion"]}")
-    implementation("com.github.Dgzt.Mundus:editor-commons:${project.properties["mundusVersion"]}")
+    implementation("com.github.JamesTKhan.Mundus:plugin-api:${project.properties["mundusVersion"]}")
+    implementation("com.github.JamesTKhan.Mundus:editor-commons:${project.properties["mundusVersion"]}")
 }
 
 // Apply a specific Java toolchain to ease working on different environments.
