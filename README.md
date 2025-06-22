@@ -124,3 +124,13 @@ You can get the path between two points:
     // The `getPath` method will upload the path array
     navMeshAsset.getPath(start, end, path);
 ```
+
+## Example
+
+You can try out in the Mundus runtime example project. Clone with `recast-navmesh-plugin` branch:
+
+```shell
+git clone -b recast-navmesh-plugin https://github.com/Dgzt/MundusRuntimeExample.git
+```
+
+Select 2 points on the terrain and the path will be visible between them. `G` button for debug renderer. Full changes [here](https://github.com/Dgzt/MundusRuntimeExample/compare/dev...Dgzt:MundusRuntimeExample:recast-navmesh-plugin)
