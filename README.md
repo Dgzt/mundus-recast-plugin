@@ -44,8 +44,6 @@ allprojects {
         ...
         mundusVersion = 'master-SNAPSHOT'
         recastNavMeshPluginVersion = 'master-SNAPSHOT'
-        gwtRecast4jVersion = "gwt_migration_antz-SNAPSHOT"
-        gltfVersion = '2.2.1' // Only needed if targeting HTML, version should match what Mundus uses
     }
 }
 
@@ -59,36 +57,6 @@ project(":core") {
         api "com.github.Dgzt:mundus-recast-plugin:$recastNavMeshPluginVersion"
     }
 }
-```
-
-If you are targeting HTML (GWT) you will also need the following:
-
-```groovy
-project(":html") {
-    ...
-    dependencies {
-        ...
-        api "com.github.jamestkhan.mundus:gdx-runtime:$mundusVersion:sources"
-        api "com.github.jamestkhan.mundus:commons:$mundusVersion:sources"
-        api "com.github.mgsx-dev.gdx-gltf:gltf:$gltfVersion:sources"
-
-        api "com.github.Dgzt:mundus-recast-plugin:$recastNavMeshPluginVersion:sources"
-        api("com.github.JamesTKhan:gdx-recast:ce15d46:sources")
-        api "com.github.antzGames.gwt-recast4j:recast:$gwtRecast4jVersion:sources"
-        api "com.github.antzGames.gwt-recast4j:detour:$gwtRecast4jVersion:sources"
-        api "com.github.antzGames.gwt-recast4j:detour-crowd:$gwtRecast4jVersion:sources"
-    }
-}
-```
-
-and lastly add this to your GdxDefinition.gwt.xml file:
-
-```xml
-<module>
-    ...
-    <inherits name="recast_navmesh_plugin" />
-    <inherits name="gdx_recast" />
-</module>
 ```
 
 ## Usage in Runtime

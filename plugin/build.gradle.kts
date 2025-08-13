@@ -61,8 +61,8 @@ tasks.withType<Jar> {
         .filter {
             it.name.equals("runtime.jar") ||
             it.name.equals("gdx-recast-${project.properties["gdxRecastVersion"]}.jar") ||
-            it.name.equals("recast-gwt_migration_antz-SNAPSHOT.jar") ||
-            it.name.equals("detour-gwt_migration_antz-SNAPSHOT.jar")
+            it.name.equals("recast-${project.properties["recast4jVersion"]}.jar") ||
+            it.name.equals("detour-${project.properties["recast4jVersion"]}.jar")
         }
         .map(::zipTree)
     from(dependencies)

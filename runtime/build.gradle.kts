@@ -25,7 +25,7 @@ repositories {
 dependencies {
     api("com.badlogicgames.gdx:gdx:${project.properties["libgdxVersion"]}")
     api("com.github.JamesTKhan.Mundus:commons:${project.properties["mundusVersion"]}")
-    api("com.github.JamesTKhan:gdx-recast:${project.properties["gdxRecastVersion"]}")
+    api("com.github.Dgzt:gdx-recast:${project.properties["gdxRecastVersion"]}")
 }
 
 // Apply a specific Java toolchain to ease working on different environments.
