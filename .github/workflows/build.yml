@@ -23,6 +23,8 @@ jobs:
           architecture: x64
       - name: Build
         run: ./gradlew build
+      - name: Debug libs
+        run: ls -lah plugin/build/libs
       - name: List files
         id: list-subfolders1
         uses: Drafteame/list-folders-action@main
