@@ -26,9 +26,13 @@ jobs:
       - name: Check
         run: ./gradlew check
       - name: List files
-        uses: philips-labs/list-folder-action@v2.1
+        id: list-subfolders
+        uses: Drafteame/list-folders-action@main
         with:
-          path: plugin/build/
+          paths: |
+            plugin/build/
+      - name: Print subfolders
+        run: echo "Subfolders: ${{ steps.list-subfolders.outputs.folders }}"
       - uses: actions/upload-artifact@v4
         with:
           name: Recast NavMesh Mundus Editor plugin
