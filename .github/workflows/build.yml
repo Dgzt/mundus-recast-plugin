@@ -12,7 +12,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v3.5.2
         with:
           fetch-depth: 0
       - name: Set up JDK 8
@@ -25,6 +25,12 @@ jobs:
         run: ./gradlew build
       - name: Check
         run: ./gradlew check
+      - name: List files
+        uses: mirko-felice/list-files-action@v3.0.5
+        with:
+          repo: ${{ github.repository }}
+          ref: ${{ github.ref }}
+          path: plugin/build/
       - uses: actions/upload-artifact@v4
         with:
           name: Recast NavMesh Mundus Editor plugin
