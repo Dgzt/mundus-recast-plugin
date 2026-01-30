@@ -30,7 +30,7 @@ jobs:
         with:
           repo: ${{ github.repository }}
           ref: ${{ github.ref }}
-          path: plugin/
+          path: plugin/build/
       - uses: actions/upload-artifact@v4
         with:
           name: Recast NavMesh Mundus Editor plugin
