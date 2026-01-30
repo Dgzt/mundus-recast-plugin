@@ -12,7 +12,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3.5.2
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
       - name: Set up JDK 8
@@ -26,10 +26,8 @@ jobs:
       - name: Check
         run: ./gradlew check
       - name: List files
-        uses: mirko-felice/list-files-action@v3.0.5
+        uses: philips-labs/list-folders-action@v1
         with:
-          repo: ${{ github.repository }}
-          ref: ${{ github.ref }}
           path: plugin/build/
       - uses: actions/upload-artifact@v4
         with:
