@@ -32,7 +32,7 @@ jobs:
           paths: |
             plugin/build/
       - name: Print subfolders
-        run: echo "Subfolders: ${{ steps.list-subfolders.outputs.folders }}"
+        run: echo "Subfolders ${{ steps.list-subfolders.outputs.folders }}"
       - uses: actions/upload-artifact@v4
         with:
           name: Recast NavMesh Mundus Editor plugin
