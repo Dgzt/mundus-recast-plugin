@@ -11,4 +11,4 @@ plugins {
 }
 
 rootProject.name = "mundus-recast-plugin"
-include("plugin", "runtime")
+include("runtime", "plugin")
