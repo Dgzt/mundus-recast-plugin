@@ -28,4 +28,4 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: Recast NavMesh Mundus Editor plugin
-          path: plugin/build/libs/recastt-plugin.jar
+          path: plugin/build/libs/recast-plugin.jar
