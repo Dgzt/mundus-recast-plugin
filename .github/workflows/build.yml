@@ -26,7 +26,7 @@ jobs:
       - name: Check
         run: ./gradlew check
       - name: List files
-        uses: philips-labs/list-folder-action@v2
+        uses: philips-labs/list-folder-action@v2.1
         with:
           path: plugin/build/
       - uses: actions/upload-artifact@v4
