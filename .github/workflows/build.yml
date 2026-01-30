@@ -30,7 +30,7 @@ jobs:
         uses: Drafteame/list-folders-action@main
         with:
           paths: |
-            plugin/build/
+            plugin/build
       - name: Print subfolders
         run: echo "Subfolders ${{ steps.list-subfolders.outputs.folders }}"
       - uses: actions/upload-artifact@v4
