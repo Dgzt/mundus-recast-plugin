@@ -23,28 +23,12 @@ jobs:
           architecture: x64
       - name: Build
         run: ./gradlew build
-      - name: Debug libs
+      - name: Debug libs1
         run: ls -lah plugin/build/libs
-      - name: List files
-        id: list-subfolders1
-        uses: Drafteame/list-folders-action@main
-        with:
-          paths: |
-            plugin/build/libs
-            runtime/build/libs
-      - name: Print subfolders
-        run: echo "Subfolders ${{ steps.list-subfolders1.outputs.folders }}"
       - name: Check
         run: ./gradlew check
-      - name: List files
-        id: list-subfolders2
-        uses: Drafteame/list-folders-action@main
-        with:
-          paths: |
-            plugin/build/libs
-            runtime/build/libs
-      - name: Print subfolders
-        run: echo "Subfolders ${{ steps.list-subfolders2.outputs.folders }}"
+      - name: Debug libs2
+        run: ls -lah plugin/build/libs
       - uses: actions/upload-artifact@v4
         with:
           name: Recast NavMesh Mundus Editor plugin
