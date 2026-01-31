@@ -44,7 +44,7 @@ java {
 tasks.withType<Jar> {
     dependsOn(":runtime:jar")
 
-    archiveFileName.set("racast-plugin.jar")
+    archiveFileName.set("recast-plugin.jar")
 
     // Otherwise you'll get a "No main manifest attribute" error
     manifest {
