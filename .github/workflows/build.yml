@@ -25,7 +25,7 @@ jobs:
         run: ./gradlew build
       - name: Check
         run: ./gradlew check
-      - uses: actions/upload-artifact@v6
+      - uses: actions/upload-artifact@v3
         with:
           name: Recast NavMesh Mundus Editor plugin
           path: plugin/build/libs/recast-plugin.jar
