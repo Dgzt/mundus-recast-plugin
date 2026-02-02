@@ -27,8 +27,8 @@ jobs:
         run: ./gradlew check
       - name: Add commit sha to the editor plugin jar file
         run: |
-          file_name=$(ls plugin/build/libs/)
-          mv "$file_name" "${file_name%.*}-${{ github.sha }}.${file_name##*.}"
+          file=$(ls plugin/build/libs/)
+          mv "$file" "${file%.*}-${{ github.sha }}.${file##*.}"
       - uses: actions/upload-artifact@v6
         with:
           name: Recast NavMesh Mundus Editor plugin
