@@ -44,14 +44,14 @@ java {
 tasks.withType<Jar> {
     dependsOn(":runtime:jar")
 
-    archiveFileName.set("recast-plugin.jar")
+    archiveFileName.set("recast-plugin-${project.properties["pluginVersion"]}.jar")
 
     // Otherwise you'll get a "No main manifest attribute" error
     manifest {
         attributes["Plugin-Class"]= "com.github.dgzt.mundus.plugin.recast.MundusRecastPlugin"
         attributes["Plugin-Id"] = "recast-plugin"
         attributes["Plugin-Provider"] = "Tibor Zsuro (Dgzt)"
-        attributes["Plugin-Version"] = "0.0.1"
+        attributes["Plugin-Version"] = "${project.properties["pluginVersion"]}"
     }
 
     // Include runtime in jar file
