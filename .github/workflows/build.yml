@@ -29,9 +29,7 @@ jobs:
         run: |
           file=$(ls plugin/build/libs/)
           commitSha=${{ github.sha }}
-          echo "$commitSha"
           commitShaFirst8Char=$(echo "$commitSha" | head -c 8)
-          echo "$commitShaFirst8Char"
           mv plugin/build/libs/"$file" plugin/build/libs/"${file%.*}-"$commitShaFirst8Char".${file##*.}"
       - uses: actions/upload-artifact@v6
         with:
