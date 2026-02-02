@@ -28,7 +28,8 @@ jobs:
       - name: Add commit sha to the editor plugin jar file
         run: |
           file=$(ls plugin/build/libs/)
-          mv plugin/build/libs/"$file" plugin/build/libs/"${file%.*}-${{ github.sha }}.${file##*.}"
+          commitsha=$(${{ github.sha }} | head -c 8)
+          mv plugin/build/libs/"$file" plugin/build/libs/"${file%.*}-"$commitsha".${file##*.}"
       - uses: actions/upload-artifact@v6
         with:
           name: Recast NavMesh Mundus Editor plugin
